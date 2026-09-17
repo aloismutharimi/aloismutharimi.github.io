@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Analysis Report — Alois Mutharimi</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0b1a2e;
+            color: #e8edf2;
+            line-height: 1.6;
+            padding: 3rem 1.5rem;
+            max-width: 780px;
+            margin: 0 auto;
+        }
+        a.back { color: #94a3b8; text-decoration: none; font-size: 0.85rem; }
+        a.back:hover { color: #fff; }
+        h1 { font-size: 1.8rem; margin: 1.5rem 0 0.4rem; color: #fff; }
+        .tagline { color: #94a3b8; margin-bottom: 2rem; font-size: 0.9rem; }
+        h2 { font-size: 1.05rem; color: #fff; margin: 2rem 0 0.6rem; }
+        p { margin-bottom: 0.8rem; color: #c9d5e0; }
+        ul { margin: 0.5rem 0 1rem 1.2rem; color: #c9d5e0; }
+        li { margin-bottom: 0.3rem; }
+        pre {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 10px;
+            padding: 1rem;
+            overflow-x: auto;
+            font-size: 0.8rem;
+            color: #c9d5e0;
+            line-height: 1.5;
+        }
+        code { font-family: 'SF Mono', Consolas, monospace; }
+        .links a {
+            color: #4a8bb7;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .links a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <a href="index.html" class="back">← Back to portfolio</a>
+
+    <h1>Data Analysis Report</h1>
+    <p class="tagline">Python · Pandas · NumPy · 28-day fitness analysis</p>
+
+    <h2>What it does</h2>
+    <p>Loads 28 days of fitness logs into a DataFrame and produces a structured weekly and monthly report.</p>
+    <ul>
+        <li><strong>Overall metrics</strong> — total steps, averages, 10K hit rate, sleep, bench press trend</li>
+        <li><strong>Weekly breakdown</strong> — per-week averages and 10K+ day counts</li>
+        <li><strong>Protocol comparison</strong> — OMAD vs 2MAD side-by-side</li>
+        <li><strong>Top 3 step days</strong> — best performances with their protocols</li>
+    </ul>
+
+    <h2>Why it exists</h2>
+    <p>Raw fitness logs are hard to interpret without structure. This project turns 28 days of numbers into weekly trends, protocol comparisons, and a clean report.</p>
+
+    <h2>Output</h2>
+    <pre><code>======================================================
+SMP 28-DAY FITNESS ANALYSIS REPORT
+======================================================
+OVERALL METRICS
+Days Tracked:             28
+Total Steps:              272,300
+Average Daily Steps       9,725
+Days Hitting 10K:         11/28 (39%)
+Average Sleep:            7.8 hours
+Bench Press Range:        74 to 88 kg
+Bench Press Trend         +2.4 kg (wk1 to wk4)
+
+WEEKLY BREAKDOWN
+Week     Average Steps   10K+ Days   Average Press
+------------------------------------------------------
+Week 1          9,371        2/7        79.6 kg
+Week 2          9,900        3/7        79.4 kg
+Week 3          9,829        3/7        81.0 kg
+Week 4         10,086        3/7        80.3 kg
+
+PROTOCOL COMPARISON
+2MAD: average steps = 9,850, sleep = 7.7 hours, bench press = 80.4 kg
+OMAD: average steps = 9,600, sleep = 7.9 hours, bench press = 79.6 kg
+
+TOP 3 STEP DAYS
+Day 26: 12,400 steps (OMAD)
+Day 12: 12,100 steps (OMAD)
+Day 14: 11,400 steps (2MAD)</code></pre>
+
+    <h2>Links</h2>
+    <p class="links">
+        <a href="https://github.com/aloismutharimi/data_analysis_report">View source on GitHub →</a>
+    </p>
+</body>
+</html>
