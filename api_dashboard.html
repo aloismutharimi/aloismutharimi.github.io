@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Dashboard — Alois Mutharimi</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0b1a2e;
+            color: #e8edf2;
+            line-height: 1.6;
+            padding: 3rem 1.5rem;
+            max-width: 780px;
+            margin: 0 auto;
+        }
+        a.back { color: #94a3b8; text-decoration: none; font-size: 0.85rem; }
+        a.back:hover { color: #fff; }
+        h1 { font-size: 1.8rem; margin: 1.5rem 0 0.4rem; color: #fff; }
+        .tagline { color: #94a3b8; margin-bottom: 2rem; font-size: 0.9rem; }
+        h2 { font-size: 1.05rem; color: #fff; margin: 2rem 0 0.6rem; }
+        p { margin-bottom: 0.8rem; color: #c9d5e0; }
+        ul { margin: 0.5rem 0 1rem 1.2rem; color: #c9d5e0; }
+        li { margin-bottom: 0.3rem; }
+        pre {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 10px;
+            padding: 1rem;
+            overflow-x: auto;
+            font-size: 0.8rem;
+            color: #c9d5e0;
+            line-height: 1.5;
+        }
+        code { font-family: 'SF Mono', Consolas, monospace; }
+        .links a {
+            color: #4a8bb7;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .links a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <a href="index.html" class="back">← Back to portfolio</a>
+
+    <h1>API Dashboard</h1>
+    <p class="tagline">Python · Multi-endpoint aggregation · JSON export</p>
+
+    <h2>What it does</h2>
+    <p>Fetches from three API endpoints, processes each independently, and combines them into a single formatted dashboard with a JSON export.</p>
+    <ul>
+        <li><strong>Members</strong> — today's steps, protocol, sleep, cold shower status</li>
+        <li><strong>Weekly logs</strong> — aggregated step data across the past 7 days</li>
+        <li><strong>Skills</strong> — active SMP skills being taught this week</li>
+    </ul>
+
+    <h2>Why it exists</h2>
+    <p>Real dashboards pull from multiple sources, each with its own shape. This demonstrates the pattern: independent parsing, combined output, machine-readable export.</p>
+
+    <h2>Output</h2>
+    <pre><code>============================================================
+        SMP COMMAND CENTRE DASHBOARD || Week 2026-W37
+============================================================
+
+SECTION 1: MEMBER PERFORMANCE
+            Total Members:                 8
+            Hit 10,000 Steps Goals:        4/8
+            Average Steps:                 9,625
+            Cold Showers Today:            6/8
+
+SECTION 2: WEEKLY STEPS
+Mon :  56,700  ###########
+Tue :  88,000  #################
+Wed :  45,700  #########
+...
+
+Best Day: Tue (88,000 total steps)
+Weekly Average: 63,329 steps/day
+
+SECTION 3: ACTIVE SMP SKILLS
+beekeeping      15 enrolled
+tiling          14 enrolled
+copywriting     13 enrolled
+...
+
+Most Popular Skill: beekeeping (15 enrolled)</code></pre>
+
+    <h2>Links</h2>
+    <p class="links">
+        <a href="https://github.com/aloismutharimi/api-dashboard">View source on GitHub →</a>
+    </p>
+</body>
+</html>
