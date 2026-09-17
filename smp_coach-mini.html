@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SMP Coach - Sleep, Water, Steps Predictor</title>
+    <style>
+        /* ===== Reset & Base ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background: #f0f4f8;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+        }
+
+        .container {
+            max-width: 680px;
+            width: 100%;
+            background: linear-gradient(135deg, #0b1a2e 0%, #1a314b 100%);
+            border-radius: 2rem;
+            padding: 2rem 2rem 2.5rem;
+            box-shadow: 0 20px 60px -12px rgba(0, 0, 0, 0.15);
+            transition: 0.2s;
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            justify-content: flex-end;
+            margin-bottom: 0.5rem;
+            font-size: 0.7rem;
+            color: #94a3b8;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .status-dot.online {
+            background: #4ade80;
+        }
+
+        .status-dot.offline {
+            background: #f87171;
+        }
+
+        h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            letter-spacing: -0.025em;
+            color: #ffffff;
+            margin-bottom: 0.25rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.4rem;
+        }
+
+        .subhead {
+            font-size: 0.9rem;
+            color: #94a3b8;
+            margin-bottom: 1.8rem;
+            text-align: center;
+            padding-left: 0;
+        }
+
+        /* ===== Form ===== */
+        .form-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+            margin-bottom: 1.8rem;
+        }
+
+        .field {
+            display: flex;
+            flex-direction: column;
+            gap: 0.3rem;
+        }
+
+        .field label {
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: #ffffff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .field label small {
+            font-weight: 400;
+            color: #94a3b8;
+            font-size: 0.75rem;
+        }
+
+        .field input {
+            padding: 0.7rem 1rem;
+            font-size: 1rem;
+            border: 1.5px solid #2b4a66;
+            border-radius: 14px;
+            background: rgba(255, 255, 255, 0.08);
+            color: #ffffff;
+            transition: 0.2s;
+            width: 100%;
+        }
+
+        .field input::placeholder {
+            color: #6a8aa8;
+        }
+
+        .field input:focus {
+            outline: none;
+            border-color: #4a8bb7;
+            box-shadow: 0 0 0 4px rgba(74, 139, 183, 0.15);
+            background: rgba(255, 255, 255, 0.12);
+        }
+
+        .field input {
+            color: #ffffff;
+        }
+
+        .field input[type="number"]::-webkit-inner-spin-button,
+        .field input[type="number"]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        .field input[type="number"] {
+            appearance: textfield;
+            -moz-appearance: textfield;
+        }
+
+        .btn {
+            background: #ffffff;
+            color: #0b1a2e;
+            border: none;
+            padding: 0.9rem 1.6rem;
+            border-radius: 60px;
+            font-weight: 600;
+            font-size: 1.05rem;
+            cursor: pointer;
+            transition: 0.2s;
+            margin-top: 0.4rem;
+            width: 100%;
+            letter-spacing: 0.3px;
+        }
+
+        .btn:hover {
+            background: #e8edf2;
+            transform: scale(1.01);
+            box-shadow: 0 8px 24px -8px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn:active {
+            transform: scale(0.98);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* ===== Response Card ===== */
+        .ai-response {
+            background: rgba(255, 255, 255, 0.06);
+            border-radius: 1.5rem;
+            padding: 1.5rem 1.6rem;
+            margin-top: 1.2rem;
+            border: 1.5px solid rgba(255, 255, 255, 0.08);
+            transition: 0.25s ease;
+            min-height: 80px;
+            color: #e8edf2;
+        }
+
+        .ai-response.idle {
+            color: #94a3b8;
+            font-style: italic;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .ai-response.loading {
+            border-color: #4a8bb7;
+            background: rgba(74, 139, 183, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.8rem;
+            flex-direction: column;
+        }
+
+        .spinner {
+            width: 28px;
+            height: 28px;
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            border-top-color: #4a8bb7;
+            animation: spin 0.8s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .ai-response.hit {
+            border-color: #1b7a5e;
+            background: rgba(27, 122, 94, 0.15);
+        }
+
+        .ai-response.miss {
+            border-color: #b13e4b;
+            background: rgba(177, 62, 75, 0.15);
+        }
+
+        .label-sm {
+            font-size: 0.7rem;
+            font-weight: 600;
+            letter-spacing: 0.6px;
+            text-transform: uppercase;
+            color: #94a3b8;
+            margin-bottom: 0.2rem;
+        }
+
+        .prediction {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #ffffff;
+            line-height: 1.3;
+        }
+
+        .ai-response.hit .prediction {
+            color: #4ade80;
+        }
+
+        .ai-response.miss .prediction {
+            color: #f87171;
+        }
+
+        .coaching {
+            font-size: 1rem;
+            line-height: 1.6;
+            color: #e8edf2;
+            background: rgba(255, 255, 255, 0.06);
+            padding: 0.6rem 0.9rem;
+            border-radius: 12px;
+            margin-top: 0.2rem;
+            white-space: pre-wrap;
+        }
+
+        .ai-response .label-sm + .coaching {
+            margin-top: 0.2rem;
+        }
+
+        .coaching-source {
+            font-size: 0.65rem;
+            color: #64748b;
+            margin-top: 0.4rem;
+            text-align: right;
+            font-style: italic;
+        }
+
+        /* ===== History Table ===== */
+        .history-section {
+            margin-top: 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            padding-top: 1.5rem;
+        }
+
+        .history-title {
+            color: #ffffff;
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .history-stats {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            font-size: 0.75rem;
+            color: #94a3b8;
+        }
+
+        .history-stats .hit-rate {
+            color: #4ade80;
+            font-weight: 600;
+        }
+
+        .history-sub {
+            color: #94a3b8;
+            font-size: 0.75rem;
+            margin-bottom: 1rem;
+        }
+
+        .table-wrap {
+            overflow-x: auto;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+
+        thead {
+            background: rgba(255, 255, 255, 0.04);
+        }
+
+        th {
+            text-align: left;
+            padding: 0.7rem 0.8rem;
+            color: #94a3b8;
+            font-weight: 600;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        td {
+            padding: 0.6rem 0.8rem;
+            color: #e8edf2;
+            border-top: 1px solid rgba(255, 255, 255, 0.04);
+        }
+
+        .clear-btn {
+            background: rgba(255, 255, 255, 0.06);
+            color: #94a3b8;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 0.3rem 0.8rem;
+            border-radius: 8px;
+            font-size: 0.7rem;
+            cursor: pointer;
+            transition: 0.2s;
+            font-weight: 500;
+        }
+
+        .clear-btn:hover {
+            background: rgba(255, 255, 255, 0.12);
+            color: #ffffff;
+        }
+
+        .empty-state {
+            color: #94a3b8;
+            text-align: center;
+            padding: 1.5rem !important;
+            font-style: italic;
+        }
+
+        .entry-count {
+            font-size: 0.75rem;
+            color: #94a3b8;
+            font-weight: 400;
+        }
+
+        /* ===== Footer ===== */
+        .footer-note {
+            margin-top: 2rem;
+            font-size: 0.75rem;
+            color: #64748b;
+            text-align: center;
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
+            padding-top: 1.25rem;
+            letter-spacing: 0.2px;
+        }
+
+        .footer-note a {
+            color: #64748b;
+            text-decoration: none;
+        }
+
+        .footer-note a:hover {
+            color: #94a3b8;
+            text-decoration: underline;
+        }
+
+        /* ===== Responsive ===== */
+        @media (max-width: 480px) {
+            .container {
+                padding: 1.5rem 1.2rem;
+            }
+            .prediction {
+                font-size: 1.15rem;
+            }
+            th, td {
+                padding: 0.4rem 0.5rem;
+                font-size: 0.8rem;
+            }
+            .status-indicator {
+                font-size: 0.6rem;
+            }
+            .history-stats {
+                font-size: 0.65rem;
+                gap: 0.5rem;
+                flex-wrap: wrap;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <a href="index.html" style="position:fixed;top:1rem;left:1rem;color:#124fa5;text-decoration:none;font-size:0.85rem;z-index:10;">← Back</a>
+
+    <div class="container">
+        <!-- Status Indicator -->
+        <div class="status-indicator">
+            <span id="aiStatus">Coach Status: Ready</span>
+            <span class="status-dot online" id="statusDot"></span>
+        </div>
+
+        <h1>🧠 SMP Coach</h1>
+        <div class="subhead">Sleep · Water · Steps &mdash; predict &amp; improve</div>
+
+        <form id="coachForm" class="form-grid">
+            <div class="field">
+                <label for="inSleep">
+                    Sleep <small>hours (0–12)</small>
+                </label>
+                <input
+                    type="number"
+                    id="inSleep"
+                    placeholder="e.g. 7.5"
+                    step="0.5"
+                    min="0"
+                    max="12"
+                    required
+                />
+            </div>
+
+            <div class="field">
+                <label for="inWater">
+                    Water <small>glasses (0–15)</small>
+                </label>
+                <input
+                    type="number"
+                    id="inWater"
+                    placeholder="e.g. 8"
+                    step="1"
+                    min="0"
+                    max="15"
+                    required
+                />
+            </div>
+
+            <div class="field">
+                <label for="inSteps">
+                    Steps <small>per day (0–25000)</small>
+                </label>
+                <input
+                    type="number"
+                    id="inSteps"
+                    placeholder="e.g. 9500"
+                    step="100"
+                    min="0"
+                    max="25000"
+                    required
+                />
+            </div>
+
+            <button type="submit" class="btn" id="submitBtn">Analyze →</button>
+        </form>
+
+        <!-- Prediction & Coaching output -->
+        <div id="coachDisplay" class="ai-response idle">
+            <div>Fill in your metrics &amp; click <strong>Analyze</strong></div>
+        </div>
+
+        <!-- ===== Session History ===== -->
+        <div class="history-section">
+            <div class="history-title">
+                <span>📋 Session History <span class="entry-count" id="entryCount">(0 entries)</span></span>
+                <div class="history-stats">
+                    <span>Hit Rate: <span class="hit-rate" id="hitRate">0%</span></span>
+                    <button id="clearHistory" class="clear-btn">Clear All</button>
+                </div>
+            </div>
+            <div class="history-sub">Entries persist while page is open &bull; resets on refresh</div>
+
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Time</th>
+                            <th>Sleep</th>
+                            <th>Water</th>
+                            <th>Steps</th>
+                            <th>Outcome</th>
+                            <th>Conf.</th>
+                        </tr>
+                    </thead>
+                    <tbody id="historyTable">
+                        <tr>
+                            <td colspan="6" class="empty-state">No entries yet. Submit your first prediction!</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="footer-note">
+            ⚡ Real‑time coach · AI-powered coaching
+        </div>
+    </div>
+
+    <!-- ===== JavaScript ===== -->
+    <script>
+        // === DIRECT EMBED (FOR LOCAL TESTING ONLY) ===
+        // Replace with your actual API key from OpenRouter
+        // Get yours at: https://openrouter.ai/keys
+        const OPENROUTER_API_KEY = 'OPENROUTER_API_KEY';
+        
+        // === AI API Configuration ===
+        const AI_API_URL = 'https://openrouter.ai/api/v1/chat/completions';
+
+        // === Prediction engine ===
+        const predictGoal = (sleep, water, steps) => {
+            const sleepScore = Math.min(sleep / 8.0, 1.0) * 35;
+            const waterScore = Math.min(water / 10.0, 1.0) * 25;
+            const stepsScore = Math.min(steps / 12000, 1.0) * 40;
+            const totalScore = sleepScore + waterScore + stepsScore;
+            const hitGoal = totalScore >= 60;
+            const distance = Math.abs(totalScore - 60);
+            const confidence = Math.min(0.50 + distance * 0.012, 0.95);
+            return { hitGoal, confidence, score: Math.round(totalScore) };
+        };
+
+        // === AI Coaching with direct API call ===
+        const getAICoaching = async (sleep, water, steps, hitGoal, score) => {
+            const status = hitGoal ? 'HIT the goal' : 'MISSED the goal';
+            const prompt = `You are a health and wellness coach. Based on these metrics:
+        - Sleep: ${sleep} hours (target: 8 hours)
+        - Water: ${water} glasses (target: 10 glasses) 
+        - Steps: ${steps} (target: 12,000)
+        - Overall score: ${score}/100
+        - Goal status: ${status}
+
+        Provide 2-3 sentences of personalized, actionable coaching advice. Be specific and encouraging. Keep it concise.`;
+
+            try {
+                const response = await fetch(AI_API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
+                        'Content-Type': 'application/json',
+                        'HTTP-Referer': window.location.href,
+                        'X-Title': 'SMP Coach'
+                    },
+                    body: JSON.stringify({
+                        model: 'google/gemini-2.0-flash-lite-preview-02-05:free',
+                        messages: [
+                            { role: 'system', content: 'You are a concise, encouraging health coach.' },
+                            { role: 'user', content: prompt }
+                        ],
+                        max_tokens: 150,
+                        temperature: 0.7
+                    })
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.text();
+                    console.error('API error:', response.status, errorData);
+                    throw new Error(`API error: ${response.status}`);
+                }
+
+                const data = await response.json();
+                return data.choices[0].message.content.trim();
+
+            } catch (error) {
+                console.warn('AI API failed, using fallback:', error);
+                return getFallbackCoaching(sleep, water, hitGoal);
+            }
+        };
+
+        // === Fallback coaching ===
+        const getFallbackCoaching = (sleep, water, hitGoal) => {
+            const COACHING = {
+                "111": "Strong inputs, strong output. Baseline is locked in. Keep this pattern consistent.",
+                "110": "Hit the goal despite low water. Sleep is the primary driver. Close the hydration gap tomorrow.",
+                "101": "Water carried today despite low sleep. Fix sleep tonight. Low sleep has hidden costs.",
+                "100": "Goal hit through willpower, not system. Willpower runs out. Fix the foundation: sleep first, water second.",
+                "011": "Inputs were solid but the goal was missed. Audit your schedule. Do not cut sleep or water.",
+                "010": "Sleep is solid but hydration is low, and the goal was missed. Add two glasses of water tomorrow.",
+                "001": "Low sleep is the lead variable. Water is fine. Get to bed 45 minutes earlier tonight.",
+                "000": "Both inputs are below threshold and the goal was missed. Reset tonight: 8 hours sleep minimum, 10 glasses water.",
+            };
+            const key = `${hitGoal ? 1 : 0}${sleep >= 7 ? 1 : 0}${water >= 8 ? 1 : 0}`;
+            return COACHING[key] || "Focus on improving sleep, hydration, and daily activity.";
+        };
+
+        // === Session Store ===
+        const sessionLog = [];
+
+        const logEntry = (sleep, water, steps, hitGoal, confidence, score, coaching) => {
+            const entry = {
+                id: sessionLog.length + 1,
+                time: new Date().toLocaleTimeString(),
+                sleep,
+                water,
+                steps,
+                hitGoal,
+                confidence,
+                score,
+                coaching
+            };
+            sessionLog.push(entry);
+            return entry;
+        };
+
+        const renderHistory = () => {
+            const tableEl = document.querySelector('#historyTable');
+            const countEl = document.querySelector('#entryCount');
+            const hitRateEl = document.querySelector('#hitRate');
+            
+            countEl.textContent = `(${sessionLog.length} entries)`;
+            
+            // Calculate and display hit rate
+            if (sessionLog.length > 0) {
+                const hitCount = sessionLog.filter(e => e.hitGoal).length;
+                const hitRate = (hitCount / sessionLog.length * 100).toFixed(1);
+                hitRateEl.textContent = `${hitRate}%`;
+                hitRateEl.style.color = hitRate >= 50 ? '#4ade80' : '#f87171';
+            } else {
+                hitRateEl.textContent = '0%';
+                hitRateEl.style.color = '#94a3b8';
+            }
+            
+            if (!sessionLog.length) {
+                tableEl.innerHTML = '<tr><td colspan="6" class="empty-state">No entries yet. Submit your first prediction!</td></tr>';
+                return;
+            }
+            
+            tableEl.innerHTML = sessionLog.map(e => {
+                const outcomeColor = e.hitGoal ? "#4ecca3" : "#f5a623";
+                const outcome = e.hitGoal ? "HIT" : "MISS";
+                return `<tr>
+                    <td style="color:#8b949e;font-size:0.8rem;">${e.time}</td>
+                    <td>${e.sleep}h</td>
+                    <td>${e.water} gl</td>
+                    <td>${e.steps.toLocaleString()}</td>
+                    <td style="color:${outcomeColor};font-weight:700;">${outcome}</td>
+                    <td style="color:#a0a0b0;">${(e.confidence * 100).toFixed(0)}%</td>
+                </tr>`;
+            }).join('');
+
+            // === Compute and log hit rate ===
+            const hitCount = sessionLog.filter(e => e.hitGoal).length;
+            const hitRate = sessionLog.length > 0 ? (hitCount / sessionLog.length * 100).toFixed(1) : 0;
+            console.log(`📊 Session Stats: ${sessionLog.length} entries, ${hitCount} hits, ${hitRate}% hit rate`);
+        };
+
+        // === Clear history ===
+        document.querySelector('#clearHistory').addEventListener('click', () => {
+            if (sessionLog.length === 0) return;
+            if (confirm('Clear all history entries?')) {
+                sessionLog.length = 0;
+                renderHistory();
+                console.log('🗑️ History cleared.');
+            }
+        });
+
+        // === Main form handler ===
+        const form = document.querySelector('#coachForm');
+        const display = document.querySelector('#coachDisplay');
+        const submitBtn = document.querySelector('#submitBtn');
+
+        form.addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            const sleep = parseFloat(document.querySelector('#inSleep').value);
+            const water = parseInt(document.querySelector('#inWater').value);
+            const steps = parseInt(document.querySelector('#inSteps').value);
+
+            if (isNaN(sleep) || isNaN(water) || isNaN(steps)) {
+                display.className = 'ai-response idle';
+                display.innerHTML = '<div class="label-sm">Error</div><div class="coaching">All three fields are required.</div>';
+                return;
+            }
+
+            // Show loading state
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Analyzing...';
+            display.className = 'ai-response loading';
+            display.innerHTML = `
+                <div class="spinner"></div>
+                <span>Getting AI coaching...</span>
+            `;
+
+            try {
+                const result = predictGoal(sleep, water, steps);
+                const outcome = result.hitGoal ? "HIT GOAL" : "MISS GOAL";
+                const confPct = (result.confidence * 100).toFixed(0);
+
+                // Get AI coaching
+                const coaching = await getAICoaching(sleep, water, steps, result.hitGoal, result.score);
+
+                // Log to session history
+                logEntry(sleep, water, steps, result.hitGoal, result.confidence, result.score, coaching);
+                renderHistory();
+
+                // Display result with AI coaching
+                const sourceLabel = OPENROUTER_API_KEY && OPENROUTER_API_KEY !== 'sk-or-v1-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx' 
+                    ? '✨ AI-generated advice' 
+                    : '📝 Template advice (API key not set)';
+                
+                display.className = `ai-response ${result.hitGoal ? "hit" : "miss"}`;
+                display.innerHTML = `
+                    <div class="label-sm">Prediction</div>
+                    <div class="prediction">${outcome} &nbsp; (${confPct}% confidence • score: ${result.score}/100)</div>
+                    <div class="label-sm" style="margin-top:0.8rem;">Coaching</div>
+                    <div class="coaching">${coaching}</div>
+                    <div class="coaching-source">${sourceLabel}</div>
+                `;
+
+                console.log(`✅ Submitted: sleep=${sleep}h water=${water}gl steps=${steps.toLocaleString()}`);
+                console.log(`📈 Result: ${outcome} | ${confPct}% confidence | score ${result.score}`);
+
+            } catch (error) {
+                console.error('❌ Error:', error);
+                display.className = 'ai-response miss';
+                display.innerHTML = `
+                    <div class="label-sm">Error</div>
+                    <div class="coaching">Something went wrong. Please try again.</div>
+                `;
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Analyze →';
+                form.reset();
+            }
+        });
+
+        // Render empty state
+        renderHistory();
+        console.log('🚀 SMP Coach with AI Coaching loaded successfully!');
+        console.log('ℹ️  To enable AI coaching, replace OPENROUTER_API_KEY with your actual key.');
+        console.log('📊 Hit rate will be calculated and displayed after each submission.');
+        console.log('💡 Tip: The hit rate shows your success percentage across all entries.');
+    </script>
+</body>
+</html>
