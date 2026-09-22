@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>School Fees & Results Tracker — Alois Mutharimi</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0b1a2e;
+            color: #e8edf2;
+            line-height: 1.6;
+            padding: 3rem 1.5rem;
+            max-width: 780px;
+            margin: 0 auto;
+        }
+        a.back { color: #94a3b8; text-decoration: none; font-size: 0.85rem; }
+        a.back:hover { color: #fff; }
+        h1 { font-size: 1.8rem; margin: 1.5rem 0 0.4rem; color: #fff; }
+        .tagline { color: #94a3b8; margin-bottom: 2rem; font-size: 0.9rem; }
+        h2 { font-size: 1.05rem; color: #fff; margin: 2rem 0 0.6rem; }
+        p { margin-bottom: 0.8rem; color: #c9d5e0; }
+        ul { margin: 0.5rem 0 1rem 1.2rem; color: #c9d5e0; }
+        li { margin-bottom: 0.3rem; }
+        pre {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 10px;
+            padding: 1rem;
+            overflow-x: auto;
+            font-size: 0.8rem;
+            color: #c9d5e0;
+            line-height: 1.5;
+        }
+        code { font-family: 'SF Mono', Consolas, monospace; }
+        .links a {
+            color: #4a8bb7;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .links a:hover { text-decoration: underline; }
+        .highlight {
+            background: rgba(74, 139, 183, 0.12);
+            border-left: 3px solid #4a8bb7;
+            padding: 0.8rem 1rem;
+            border-radius: 6px;
+            margin: 1rem 0;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <a href="index.html" class="back">← Back to portfolio</a>
+
+    <h1>School Fees & Results Tracker</h1>
+    <p class="tagline">Python · CLI · JSON · Pandas · Built for real school administrators</p>
+
+    <div class="highlight">
+        A command-line tool that stores student payments, balances, and exam scores — then generates a ranked term report with arrears flags and a CSV export.
+    </div>
+
+    <h2>The problem</h2>
+    <p>Small schools and tutoring centers track fees and grades in paper ledgers or scattered Excel files. That leads to:</p>
+    <ul>
+        <li>Billing errors and missed arrears</li>
+        <li>No fast way to rank students by performance</li>
+        <li>Term reports that take hours to assemble</li>
+    </ul>
+
+    <h2>What it does</h2>
+    <ul>
+        <li><strong>Manages students</strong> — add individually or bulk-import from CSV</li>
+        <li><strong>Records payments</strong> — amount, term, method (cash / mpesa / bank)</li>
+        <li><strong>Records exam scores</strong> — per subject, per term</li>
+        <li><strong>Computes balances</strong> — fees due, paid, outstanding, arrears status</li>
+        <li><strong>Ranks students</strong> — average score and class rank per term</li>
+        <li><strong>Generates reports</strong> — formatted terminal output + CSV export</li>
+    </ul>
+
+    <h2>Output</h2>
+    <pre><code>================================================================
+  TERM REPORT — 2026-T1
+================================================================
+
+SECTION 1: FEES & BALANCES
+
+  Sitila Lati          Form 2   Due   28,000  Paid   15,000  Bal   13,000  ⚠ ARREARS
+  Janima Mila          Form 2   Due   28,000  Paid   28,000  Bal        0
+
+SECTION 2: PERFORMANCE RANKING
+
+  #1   Janima Mila          Form 2   Avg 84.0%
+  #2   Sitila Lati          Form 2   Avg 80.0%
+
+SECTION 3: SUMMARY
+
+  Total billed:        56,000
+  Total collected:     43,000
+  Outstanding:         13,000
+  In arrears:      1/2 students
+
+================================================================
+
+✓ CSV exported → reports/2026-T1-term-report.csv</code></pre>
+
+    <h2>How it's built</h2>
+    <p>Four modules, each with one job:</p>
+    <ul>
+        <li><code>storage.py</code> — JSON and CSV file I/O, handles locked files gracefully</li>
+        <li><code>tracker.py</code> — business logic: students, payments, balances, validation</li>
+        <li><code>report.py</code> — Pandas aggregation, ranking, terminal formatting</li>
+        <li><code>cli.py</code> — argument parsing and user feedback</li>
+    </ul>
+    <p>No database. No web server. Just Python, JSON, and Pandas.</p>
+
+    <h2>Links</h2>
+    <p class="links">
+        <a href="https://github.com/aloismutharimi/school_tracker-sys">View source on GitHub →</a>
+    </p>
+</body>
+</html>
