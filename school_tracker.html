@@ -54,7 +54,7 @@
     <a href="index.html" class="back">← Back to portfolio</a>
 
     <h1>School Fees & Results Tracker</h1>
-    <p class="tagline">Python · CLI · JSON · Pandas · Built for real school administrators</p>
+    <p class="tagline">Python · CLI · JSON · Pandas · ReportLab · Built for real school administrators</p>
 
     <div class="highlight">
         A command-line tool that stores student payments, balances, and exam scores — then generates a ranked term report with arrears flags and a CSV export.
@@ -70,13 +70,32 @@
 
     <h2>What it does</h2>
     <ul>
-        <li><strong>Manages students</strong> — add individually or bulk-import from CSV</li>
-        <li><strong>Records payments</strong> — amount, term, method (cash / mpesa / bank)</li>
-        <li><strong>Records exam scores</strong> — per subject, per term</li>
-        <li><strong>Computes balances</strong> — fees due, paid, outstanding, arrears status</li>
-        <li><strong>Ranks students</strong> — average score and class rank per term</li>
-        <li><strong>Generates reports</strong> — formatted terminal output + CSV export</li>
+    <li><strong>Manages students</strong> — add individually or bulk-import from CSV</li>
+    <li><strong>Records payments</strong> — amount, term, method (cash / mpesa / bank)</li>
+    <li><strong>Records exam scores</strong> — per subject, per term</li>
+    <li><strong>Computes balances</strong> — fees due, paid, outstanding, arrears status</li>
+    <li><strong>Ranks students</strong> — average score and class rank per term</li>
+    <li><strong>Generates reports</strong> — five modes, in three formats</li>
     </ul>
+
+    <h2>Report modes</h2>
+    <p>Every report can be scoped and exported in the format that fits the reader:</p>
+    <table style="width:100%;border-collapse:collapse;font-size:0.9rem;margin:1rem 0;">
+    <thead>
+        <tr style="background:rgba(255,255,255,0.05);">
+            <th style="text-align:left;padding:0.6rem 0.8rem;color:#94a3b8;font-size:0.75rem;text-transform:uppercase;">Mode</th>
+            <th style="text-align:left;padding:0.6rem 0.8rem;color:#94a3b8;font-size:0.75rem;text-transform:uppercase;">Output</th>
+        </tr>
+    </thead>
+    <tbody style="color:#c9d5e0;">
+        <tr><td style="padding:0.6rem 0.8rem;border-top:1px solid rgba(255,255,255,0.05);">Full report</td><td style="padding:0.6rem 0.8rem;border-top:1px solid rgba(255,255,255,0.05);">All classes, fees + grades, per-class and school summaries</td></tr>
+        <tr><td style="padding:0.6rem 0.8rem;border-top:1px solid rgba(255,255,255,0.05);">Fees only</td><td style="padding:0.6rem 0.8rem;border-top:1px solid rgba(255,255,255,0.05);">Balances and arrears only</td></tr>
+        <tr><td style="padding:0.6rem 0.8rem;border-top:1px solid rgba(255,255,255,0.05);">Grades only</td><td style="padding:0.6rem 0.8rem;border-top:1px solid rgba(255,255,255,0.05);">Rankings and averages only</td></tr>
+        <tr><td style="padding:0.6rem 0.8rem;border-top:1px solid rgba(255,255,255,0.05);">Per class</td><td style="padding:0.6rem 0.8rem;border-top:1px solid rgba(255,255,255,0.05);">One class in detail</td></tr>
+        <tr><td style="padding:0.6rem 0.8rem;border-top:1px solid rgba(255,255,255,0.05);">Solo student</td><td style="padding:0.6rem 0.8rem;border-top:1px solid rgba(255,255,255,0.05);">One student — fees, rank in class, subject breakdown</td></tr>
+    </tbody>
+    </table>
+    <p>Every mode exports to <strong>terminal</strong>, <strong>CSV</strong>, or <strong>PDF</strong>.</p>
 
     <h2>Output</h2>
     <pre><code>================================================================
@@ -104,15 +123,27 @@ SECTION 3: SUMMARY
 
 ✓ CSV exported → reports/2026-T1-term-report.csv</code></pre>
 
+    <h2>PDF output</h2>
+    <p>The solo student PDF is designed to be handed to a guardian — fee status, class rank, and a subject-by-subject breakdown on a single page.</p>
+    <img src="assets/solo_student_report.png"" alt="Sample PDF student report" style="width:100%;border-radius:12px;border:1px solid rgba(255,255,255,0.08);margin:1rem 0;cursor:zoom-in;">
+    
     <h2>How it's built</h2>
-    <p>Four modules, each with one job:</p>
+    <p>Five modules, each with one job:</p>
     <ul>
-        <li><code>storage.py</code> — JSON and CSV file I/O, handles locked files gracefully</li>
-        <li><code>tracker.py</code> — business logic: students, payments, balances, validation</li>
-        <li><code>report.py</code> — Pandas aggregation, ranking, terminal formatting</li>
-        <li><code>cli.py</code> — argument parsing and user feedback</li>
+    <li><code>storage.py</code> — JSON and CSV file I/O, handles locked files gracefully</li>
+    <li><code>tracker.py</code> — business logic: students, payments, balances, validation</li>
+    <li><code>report.py</code> — aggregation, per-class ranking, terminal formatting</li>
+    <li><code>pdf_report.py</code> — renders reports as styled A4 PDFs via ReportLab</li>
+    <li><code>cli.py</code> — argument parsing and user feedback</li>
     </ul>
-    <p>No database. No web server. Just Python, JSON, and Pandas.</p>
+    <p>No database. No web server. Just Python, Pandas, and ReportLab.</p>
+
+    <h2>What I learned</h2>
+    <p>Two lessons from this project:</p>
+    <ul>
+    <li><strong>Internal tools don't need a web app.</strong> A well-designed CLI solved the real problem faster, and runs anywhere Python runs.</li>
+    <li><strong>Working code isn't the same as useful code.</strong> My first report was technically correct but structured wrong for how schools actually read data.</li>
+    </ul>
 
     <h2>Links</h2>
     <p class="links">
