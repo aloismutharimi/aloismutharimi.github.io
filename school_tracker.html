@@ -54,7 +54,7 @@
     <a href="index.html" class="back">← Back to portfolio</a>
 
     <h1>School Fees & Results Tracker</h1>
-    <p class="tagline">Python · CLI · JSON · Pandas · ReportLab · Built for real school administrators</p>
+    <p class="tagline">Python · CLI · Flask · JSON · Pandas · ReportLab · Built for real school administrators</p>
 
     <div class="highlight">
         A command-line tool that stores student payments, balances, and exam scores — then generates a ranked term report with arrears flags and a CSV export.
@@ -145,9 +145,18 @@ SECTION 3: SUMMARY
     <li><strong>Working code isn't the same as useful code.</strong> My first report was technically correct but structured wrong for how schools actually read data.</li>
     </ul>
 
+    <h2>Two projects, one engine</h2>
+    <p>The tool ships as two separate repos:</p>
+    <ul>
+        <li><strong>school_tracker-sys</strong> — the CLI engine. Stores data, computes balances, generates reports, exports CSV and PDF. Installable as a Python package.</li>
+        <li><strong>school_tracker-web</strong> — a Flask web interface that imports the CLI package. Forms, tables, and downloads for administrators who don't use a terminal.</li>
+    </ul>
+    <p>The web app depends on the CLI package via GitHub. Fix a bug in the balance calculation, and both interfaces get it — no duplication, no drift.</p>
+
     <h2>Links</h2>
-    <p class="links">
-        <a href="https://github.com/aloismutharimi/school_tracker-sys">View source on GitHub →</a>
-    </p>
+<p class="links">
+    <a href="https://github.com/aloismutharimi/school_tracker-sys">CLI source on GitHub →</a><br>
+    <a href="https://github.com/aloismutharimi/school_tracker-web">Web interface on GitHub →</a>
+</p>
 </body>
 </html>
